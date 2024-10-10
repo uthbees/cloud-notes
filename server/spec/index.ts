@@ -4,11 +4,11 @@ import fs from 'fs';
 
 const server = http.createServer((req, res) => {
     if (req.url === '/spec') {
-        const yamlData = fs.readFileSync('spec/spec.yaml', 'utf8');
+        const yamlData = fs.readFileSync('server/spec/spec.yaml', 'utf8');
         res.writeHead(200, { 'Content-Type': 'application/yaml' });
         res.end(yamlData);
     } else {
-        const htmlData = fs.readFileSync('spec/index.html', 'utf8');
+        const htmlData = fs.readFileSync('server/spec/index.html', 'utf8');
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(htmlData);
     }

@@ -1,5 +1,17 @@
-A basic project template with a simple script to run Swagger UI on a local OpenAPI specification file.
+Notes on the cloud.
 
-The intent is for this script to be copied to other projects to make it easier to get started with OpenAPI.
+## How to run
 
-To run the script directly from this repository, run `npm run api-spec`.
+Install node: https://nodejs.org/en/download/package-manager
+
+Run `npm install` to install the project dependencies.
+
+Run `npm run server` to run the server.
+
+Run `npm run web-client` to run the web client application.
+
+You will need to have a client and the server running at the same time for the application to work.
+
+## Misc scripts
+
+Run `npm run api-spec` to open the API specification.
