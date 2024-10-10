@@ -1,0 +1,28 @@
+{
+  "name": "swagger-ui-template",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "api-spec": "tsx spec/index.ts",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.5",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "open": "^10.1.0",
+    "prettier": "^3.3.3",
+    "tsx": "^4.19.1",
+    "typescript": "^5.5.3"
+  },
+  "engines": {
+    "node": ">=20.2.0",
+    "npm": ">=9.6.6"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,html,json,css,md}": [
+      "prettier --write"
+    ]
+  }
+}
