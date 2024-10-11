@@ -1,20 +1,359 @@
 openapi: 3.1.0
 info:
-  version: '1.0.0'
+  version: 1.0.0
   title: Cloud Notes
 
 paths:
-  '/example':
+  /notes:
     get:
+      description: Get all notes. Does not include note contents.
       responses:
-        '200':
-          description: Ok
+        200:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  hello:
-                    type: string
-              example:
-                hello: world
+                type: array
+                items:
+                  $ref: '#/components/schemas/short-Note'
+        401:
+          $ref: '#/components/responses/401-unauthenticated'
+    post:
+      description: Create a new note.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                contents:
+                  type: string
+              required:
+                - title
+      responses:
+        201:
+          $ref: '#/components/responses/201-created'
+        400:
+          $ref: '#/components/responses/400-maybe-bad-note-title'
+        401:
+          $ref: '#/components/responses/401-unauthenticated'
+  /notes/{uuid}:
+    get:
+      description: Get the full data of a specific note.
+      parameters:
+        $ref: '#/components/parameters/path-uuid'
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+        401:
+          $ref: '#/components/responses/401-unauthenticated'
+        404:
+          $ref: '#/components/responses/404-bad-path-uuid'
+    patch:
+      description: Update a specific note. Automatically updates last_updated_at.
+      parameters:
+        $ref: '#/components/parameters/path-uuid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                _current_last_updated_at_value:
+                  type: number
+                  description: The current last_updated_at value (as far as the client knows). If this doesn't match the server's value, the update will be rejected and a complete representation of the current resource will be sent back so that the client can merge is with their version.
+                title:
+                  type: string
+                contents:
+                  type: string
+                in_trash:
+                  type: boolean
+                folder_uuid:
+                  type: string
+                  description: The uuid of the note's folder. Passing an empty string unsets the value, meaning that this note will be moved to the root.
+      responses:
+        204:
+          $ref: '#/components/responses/204-no-content'
+        400:
+          description: Bad request because of one of the following:<br/>- The request body was invalid<br/>- The action would result in an invalid note title<br/>- The _current_last_updated_at_value doesn't match the current last_updated_at value, indicating that the client's copy is out of date.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                  - $ref: '#/components/schemas/bad-note-title-response-content'
+                  - $ref: '#/components/schemas/Note'
+        401:
+          $ref: '#/components/responses/401-unauthenticated'
+        404:
+          $ref: '#/components/responses/404-bad-path-uuid'
+    delete:
+      description: Permanently delete a specific note.
+      parameters:
+        $ref: '#/components/parameters/path-uuid'
+      responses:
+        204:
+          $ref: '#/components/responses/204-no-content'
+        401:
+          $ref: '#/components/responses/401-unauthenticated'
+        404:
+          $ref: '#/components/responses/404-bad-path-uuid'
+  /folders:
+    get:
+      description: Get all folders.
+      parameters:
+        $ref: '#/components/parameters/path-uuid'
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Folder'
+        401:
+          $ref: '#/components/responses/401-unauthenticated'
+        404:
+          $ref: '#/components/responses/404-bad-path-uuid'
+    post:
+      description: Create a new folder.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                parent_uuid:
+                  type: string
+              required:
+                - title
+      responses:
+        201:
+          $ref: '#/components/responses/201-created'
+        400:
+          $ref: '#/components/responses/400-maybe-bad-folder-title'
+        401:
+          $ref: '#/components/responses/401-unauthenticated'
+  /folders/{uuid}:
+    get:
+      description: Get a specific folder.
+      parameters:
+        $ref: '#/components/parameters/path-uuid'
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+        401:
+          $ref: '#/components/responses/401-unauthenticated'
+        404:
+          $ref: '#/components/responses/404-bad-path-uuid'
+    patch:
+      description: Update a specific folder. Automatically updates last_updated_at.
+      parameters:
+        $ref: '#/components/parameters/path-uuid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                parent_uuid:
+                  type: string
+                  description: The uuid of the parent folder. Passing an empty string unsets the value, meaning that this folder will be moved to the root.
+      responses:
+        204:
+          $ref: '#/components/responses/204-no-content'
+        400:
+          $ref: '#/components/responses/400-maybe-bad-folder-title'
+        401:
+          $ref: '#/components/responses/401-unauthenticated'
+        404:
+          $ref: '#/components/responses/404-bad-path-uuid'
+    delete:
+      description: Delete a specific folder. Any contained notes will be moved to the trash (and have their folder set to the root).
+      parameters:
+        $ref: '#/components/parameters/path-uuid'
+      responses:
+        204:
+          $ref: '#/components/responses/204-no-content'
+        401:
+          $ref: '#/components/responses/401-unauthenticated'
+        404:
+          $ref: '#/components/responses/404-bad-path-uuid'
+  /updates:
+    get:
+      description: Get all the entities that have been updated after a certain timestamp. Does not include notes' contents.
+      parameters:
+        - name: since
+          in: query
+          required: true
+          schema:
+            type: number
+          description: The timestamp to check against entities' last updated times. All entities that have been updated after this timestamp will be included in the response.
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                    - type: object
+                      properties:
+                        type:
+                          type: string
+                          enum: [ 'note' ]
+                        value:
+                          $ref: '#/components/schemas/short-Note'
+                    - type: object
+                      properties:
+                        type:
+                          type: string
+                          enum: [ 'folder' ]
+                        value:
+                          $ref: '#/components/schemas/Folder'
+        400:
+          description: Invalid parameter(s).
+        401:
+          $ref: '#/components/responses/401-unauthenticated'
+
+components:
+  parameters:
+    path-uuid:
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+  schemas:
+    Note:
+      allOf:
+        - $ref: '#/components/schemas/short-Note'
+        - type: object
+          properties:
+            contents:
+              type: string
+          required:
+            - contents
+      example:
+        uuid: fcff8995-b71c-40e3-9d10-981829433a12
+        title: Example note
+        contents: This is the contents field of an example note. The value can get extremely large.
+        trashed_at: 1728632477513
+        last_updated_at: 1728632477513
+        folder_uuid: c74fb1b9-cf83-4c86-89df-ea7b7ed92bc5
+    short-Note:
+      type: object
+      properties:
+        uuid:
+          type: string
+        title:
+          type: string
+        trashed_at:
+          type: number
+          description: The timestamp when this note was trashed. If null, the note is not in the trash.
+        last_updated_at:
+          type: number
+          description: The timestamp when this note was last updated.
+        folder_uuid:
+          type: string
+          description: The uuid of the folder this note is in. If null, the note is at the root level.
+      required:
+        - uuid
+        - title
+        - last_updated_at
+      example:
+        uuid: fcff8995-b71c-40e3-9d10-981829433a12
+        title: Example note
+        trashed_at: 1728632477513
+        last_updated_at: 1728632477513
+        folder_uuid: c74fb1b9-cf83-4c86-89df-ea7b7ed92bc5
+    Folder:
+      type: object
+      properties:
+        uuid:
+          type: string
+        title:
+          type: string
+        last_updated_at:
+          type: number
+          description: The timestamp when this folder was last updated.
+        parent_uuid:
+          type: integer
+          description: The uuid of the folder this folder is in. If null, the folder is at the root level.
+      required:
+        - uuid
+        - title
+        - last_updated_at
+      example:
+        uuid: 92b6131f-fe35-4f37-8525-6bded6d05397
+        title: Important stuff
+        last_updated_at: 1728632477513
+    bad-note-title-response-content:
+      type: object
+      properties:
+        error:
+          type: string
+          enum: ['bad-note-title']
+      required:
+        - error
+    bad-folder-title-response-content:
+      type: object
+      properties:
+        error:
+          type: string
+          enum: ['bad-folder-title']
+      required:
+        - error
+  responses:
+    201-created:
+      description: The resource was successfully created.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              uuid:
+                type: string
+            required:
+              - uuid
+            example:
+              uuid: c1a93f96-a088-4764-97a2-361976fa4881
+    204-no-content:
+      description: The request was successful, but there is no content to send in the response.
+    400-generic-bad-request:
+      description: Invalid parameter and/or request body.
+    400-maybe-bad-note-title:
+      description: Bad request either because the parameters and/or request body were invalid or because the action would result in an invalid note title - for example, because there would be two notes with the same title in the same folder.
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - type: object
+              - $ref: '#/components/schemas/bad-note-title-response-content'
+    400-maybe-bad-folder-title:
+      description: Bad request either because the parameters and/or request body were invalid or because the action would result in an invalid folder title - for example, because there would be two folders with the same title in the same folder.
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - type: object
+              - $ref: '#/components/schemas/bad-folder-title-response-content'
+    401-unauthenticated:
+      description: The user does not have valid credentials for the application.
+    404-bad-path-uuid:
+      description: The uuid in the path did not match any existing resource of the applicable type.
