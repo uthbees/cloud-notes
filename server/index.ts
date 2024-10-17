@@ -22,8 +22,8 @@ app.db = connection;
 
 app.get('/notes', getNotes);
 app.post('/notes', postNote);
-app.patch('/notes', patchNote);
-app.delete('/notes', deleteNote);
+app.patch('/notes/:uuid', patchNote);
+app.delete('/notes/:uuid', deleteNote);
 
 const port = 3001;
 

@@ -1,5 +1,5 @@
 import { ExpressRequest, ExpressResponse } from '../types';
-import { RowDataPacket } from 'mysql2';
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
 
 export default async function postNote(
     req: ExpressRequest,
@@ -36,16 +36,18 @@ export default async function postNote(
         const uuid = crypto.randomUUID();
         const now = Date.now();
 
-        await db.query(
+        const [result] = await db.execute<ResultSetHeader>(
             'INSERT INTO note (uuid, last_updated_at_timestamp, title, contents) VALUES (?, ?, ?, ?)',
             [uuid, now, requestBody.title, requestBody.contents],
         );
 
-        res.status(201);
-        res.send({ uuid });
+        if (result.affectedRows === 1) {
+            res.status(201).send({ uuid });
+        } else {
+            res.status(500).send(`Internal error: ${result.info}`);
+        }
     } catch (err) {
-        res.status(500);
-        res.send(`Internal error: ${err}`);
+        res.status(500).send(`Internal error: ${err}`);
     }
 }
 
