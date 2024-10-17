@@ -12,8 +12,9 @@
     },
     "dependencies": {
         "@mui/material": "^6.1.1",
+        "dotenv": "^16.4.5",
         "express": "^4.21.1",
-        "mysql": "^2.18.1",
+        "mysql2": "^3.11.3",
         "react": "^18.3.1",
         "react-dom": "^18.3.1"
     },

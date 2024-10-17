@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Pool } from 'mysql';
+import { Pool } from 'mysql2';
 
 export type ExpressRequest = Request;
 export type ExpressResponse = Response;
