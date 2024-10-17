@@ -30,7 +30,7 @@ npm install
 
 Instructions for using the software:
 
-This is just an API for now, so all I have for a frontend is the Swagger UI API specification page. It should still work though - you can query the API endpoints under the "in scope" section using the "try it out" buttons.
+This is just an API for now, so all I have for a frontend is the Swagger UI API specification page. It should still work though - you can query the API endpoints under the "in scope" section using the "try it out" buttons. (Note that you will not be able to see the contents of any notes, because the only endpoint that gives access to that information was determined to be out of scope for the sprint.)
 
 ## Development Environment
 
@@ -50,6 +50,4 @@ I found these websites useful in developing this software:
 
 The following items I plan to fix, improve, and/or add to this project in the future:
 
--   [ ] First thing here
--   [ ]
--   [ ]
+-   [ ] Use zod or a similar library for validating request bodies/parameters instead of doing it manually.

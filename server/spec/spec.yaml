@@ -3,6 +3,9 @@ info:
   version: 1.0.0
   title: Cloud Notes
 
+servers:
+  - url: http://localhost:3001
+
 paths:
   /notes:
     get:
@@ -117,7 +120,7 @@ paths:
   /folders:
     get:
       tags:
-        - In scope
+        - Out of scope
       description: Get all folders.
       responses:
         200:
@@ -133,7 +136,7 @@ paths:
           $ref: '#/components/responses/404-bad-path-uuid'
     post:
       tags:
-        - In scope
+        - Out of scope
       description: Create a new folder.
       requestBody:
         required: true

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Pool } from 'mysql2';
+import { Pool } from 'mysql2/promise';
 
 export type ExpressRequest = Request;
 export type ExpressResponse = Response;

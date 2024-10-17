@@ -1,13 +1,12 @@
 import express from 'express';
 import getNotes from './routes/getNotes';
-import postNotes from './routes/postNotes';
-import mysql from 'mysql2';
+import postNote from './routes/postNote';
+import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
+import patchNote from './routes/patchNote';
+import deleteNote from './routes/deleteNote';
 
 dotenv.config();
-
-const app = express();
-const port = 3001;
 
 const connection = mysql.createPool({
     host: 'localhost',
@@ -16,10 +15,17 @@ const connection = mysql.createPool({
     database: 'cloud_notes',
 });
 
+const app = express();
+app.use(express.json({ limit: '500kb' }));
+
 app.db = connection;
 
 app.get('/notes', getNotes);
-app.post('/notes', postNotes);
+app.post('/notes', postNote);
+app.patch('/notes', patchNote);
+app.delete('/notes', deleteNote);
+
+const port = 3001;
 
 app.listen(port, () => {
     console.log(`Listening on port ${port}`);
