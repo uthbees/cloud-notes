@@ -376,4 +376,4 @@ tags:
   - name: In scope
     description: In scope for this sprint.
   - name: Out of scope
-    description: Out of scope for this sprint, although still required for the full portfolio project.
+    description: Out of scope for this sprint, but still required for the full portfolio project.
