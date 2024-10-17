@@ -49,7 +49,7 @@ paths:
         - Out of scope
       description: Get the full data of a specific note.
       parameters:
-        $ref: '#/components/parameters/path-uuid'
+        - $ref: '#/components/parameters/path-uuid'
       responses:
         200:
           content:
@@ -65,7 +65,7 @@ paths:
         - In scope
       description: Update a specific note. Automatically updates last_updated_at.
       parameters:
-        $ref: '#/components/parameters/path-uuid'
+        - $ref: '#/components/parameters/path-uuid'
       requestBody:
         required: true
         content:
@@ -106,7 +106,7 @@ paths:
         - In scope
       description: Permanently delete a specific note.
       parameters:
-        $ref: '#/components/parameters/path-uuid'
+        - $ref: '#/components/parameters/path-uuid'
       responses:
         204:
           $ref: '#/components/responses/204-no-content'
@@ -119,8 +119,6 @@ paths:
       tags:
         - In scope
       description: Get all folders.
-      parameters:
-        $ref: '#/components/parameters/path-uuid'
       responses:
         200:
           content:
@@ -163,7 +161,7 @@ paths:
         - Out of scope
       description: Get a specific folder.
       parameters:
-        $ref: '#/components/parameters/path-uuid'
+        - $ref: '#/components/parameters/path-uuid'
       responses:
         200:
           content:
@@ -179,7 +177,7 @@ paths:
         - Out of scope
       description: Update a specific folder.
       parameters:
-        $ref: '#/components/parameters/path-uuid'
+        - $ref: '#/components/parameters/path-uuid'
       requestBody:
         required: true
         content:
@@ -206,7 +204,7 @@ paths:
         - Out of scope
       description: Delete a specific folder. Any contained notes will be moved to the trash (and have their folder set to the root).
       parameters:
-        $ref: '#/components/parameters/path-uuid'
+        - $ref: '#/components/parameters/path-uuid'
       responses:
         204:
           $ref: '#/components/responses/204-no-content'
@@ -238,14 +236,14 @@ paths:
                       properties:
                         type:
                           type: string
-                          enum: [ 'note' ]
+                          enum: ['note']
                         value:
                           $ref: '#/components/schemas/short-Note'
                     - type: object
                       properties:
                         type:
                           type: string
-                          enum: [ 'folder' ]
+                          enum: ['folder']
                         value:
                           $ref: '#/components/schemas/Folder'
         400:
@@ -256,11 +254,11 @@ paths:
 components:
   parameters:
     path-uuid:
-      - name: uuid
-        in: path
-        required: true
-        schema:
-          type: string
+      name: uuid
+      in: path
+      required: true
+      schema:
+        type: string
   schemas:
     Note:
       allOf:
