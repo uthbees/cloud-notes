@@ -18,6 +18,24 @@ USE `cloud_notes`;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `folder`
+--
+
+DROP TABLE IF EXISTS `folder`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `folder` (
+                          `id` int NOT NULL AUTO_INCREMENT,
+                          `uuid` varchar(36) NOT NULL,
+                          `title` varchar(100) NOT NULL,
+                          `parent_id` int DEFAULT NULL,
+                          PRIMARY KEY (`id`),
+                          UNIQUE KEY `id_UNIQUE` (`id`),
+                          UNIQUE KEY `uuid_UNIQUE` (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `note`
 --
 
@@ -47,4 +65,4 @@ CREATE TABLE `note` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-17  9:51:39
+-- Dump completed on 2024-10-17 10:52:06
