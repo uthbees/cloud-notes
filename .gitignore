@@ -17,6 +17,6 @@ build
 *.sw?
 
 # Jetbrains temporary files
-~*
+*~
 
 .env
