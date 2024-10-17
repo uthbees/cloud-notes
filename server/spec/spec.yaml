@@ -43,7 +43,7 @@ paths:
         201:
           $ref: '#/components/responses/201-created'
         400:
-          $ref: '#/components/responses/400-maybe-bad-note-title'
+          $ref: '#/components/responses/400-bad-request'
         401:
           $ref: '#/components/responses/401-unauthenticated'
   /notes/{uuid}:
@@ -78,7 +78,7 @@ paths:
               properties:
                 _current_last_updated_at_value:
                   type: number
-                  description: The current last_updated_at value (as far as the client knows). If this doesn't match the server's value, the update will be rejected and a complete representation of the current resource will be sent back so that the client can merge is with their version.
+                  description: The current last_updated_at value (as far as the client knows). If this doesn't match the server's value, the update will be rejected and a complete representation of the current resource will be sent back so that the client can merge it with their version.
                 title:
                   type: string
                 contents:
@@ -88,9 +88,11 @@ paths:
                 folder_uuid:
                   type: string
                   description: The uuid of the note's folder. Passing an empty string unsets the value, meaning that this note will be moved to the root.
+              required:
+                - _current_last_updated_at_value
       responses:
-        204:
-          $ref: '#/components/responses/204-no-content'
+        200:
+          $ref: '#/components/responses/200-patched'
         400:
           description: Bad request because of one of the following:<br/>- The request body was invalid<br/>- The action would result in an invalid note title<br/>- The _current_last_updated_at_value doesn't match the current last_updated_at value, indicating that the client's copy is out of date.
           content:
@@ -98,7 +100,6 @@ paths:
               schema:
                 oneOf:
                   - type: object
-                  - $ref: '#/components/schemas/bad-note-title-response-content'
                   - $ref: '#/components/schemas/Note'
         401:
           $ref: '#/components/responses/401-unauthenticated'
@@ -155,7 +156,7 @@ paths:
         201:
           $ref: '#/components/responses/201-created'
         400:
-          $ref: '#/components/responses/400-maybe-bad-folder-title'
+          $ref: '#/components/responses/400-bad-request'
         401:
           $ref: '#/components/responses/401-unauthenticated'
   /folders/{uuid}:
@@ -194,10 +195,10 @@ paths:
                   type: string
                   description: The uuid of the parent folder. Passing an empty string unsets the value, meaning that this folder will be moved to the root.
       responses:
-        204:
-          $ref: '#/components/responses/204-no-content'
+        200:
+          $ref: '#/components/responses/200-patched'
         400:
-          $ref: '#/components/responses/400-maybe-bad-folder-title'
+          $ref: '#/components/responses/400-bad-request'
         401:
           $ref: '#/components/responses/401-unauthenticated'
         404:
@@ -320,23 +321,20 @@ components:
       example:
         uuid: 92b6131f-fe35-4f37-8525-6bded6d05397
         title: Important stuff
-    bad-note-title-response-content:
-      type: object
-      properties:
-        error:
-          type: string
-          enum: ['bad-note-title']
-      required:
-        - error
-    bad-folder-title-response-content:
-      type: object
-      properties:
-        error:
-          type: string
-          enum: ['bad-folder-title']
-      required:
-        - error
   responses:
+    200-patched:
+      description: The PATCH operation was successful.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              last_updated_at:
+                type: number
+            required:
+              - last_updated_at
+            example:
+              last_updated_at: 1729199908338
     201-created:
       description: The resource was successfully created.
       content:
@@ -346,30 +344,18 @@ components:
             properties:
               uuid:
                 type: string
+              last_updated_at:
+                type: number
             required:
               - uuid
+              - last_updated_at
             example:
               uuid: c1a93f96-a088-4764-97a2-361976fa4881
+              last_updated_at: 1729199908338
     204-no-content:
       description: The request was successful, but there is no content to send in the response.
-    400-generic-bad-request:
-      description: Invalid parameter and/or request body.
-    400-maybe-bad-note-title:
-      description: Bad request either because the parameters and/or request body were invalid or because the action would result in an invalid note title - for example, because there would be two notes with the same title in the same folder.
-      content:
-        application/json:
-          schema:
-            oneOf:
-              - type: object
-              - $ref: '#/components/schemas/bad-note-title-response-content'
-    400-maybe-bad-folder-title:
-      description: Bad request either because the parameters and/or request body were invalid or because the action would result in an invalid folder title - for example, because there would be two folders with the same title in the same folder.
-      content:
-        application/json:
-          schema:
-            oneOf:
-              - type: object
-              - $ref: '#/components/schemas/bad-folder-title-response-content'
+    400-bad-request:
+      description: Bad request, either because of an invalid parameter and/or request body or because performing the action would result in a title conflict (two notes or folders with the same name in the same folder).
     401-unauthenticated:
       description: The user does not have valid credentials for the application.
     404-bad-path-uuid:

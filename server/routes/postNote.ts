@@ -1,5 +1,5 @@
-import { ExpressRequest, ExpressResponse } from '../types';
-import { ResultSetHeader, RowDataPacket } from 'mysql2';
+import { ExpressRequest, ExpressResponse, NoteTitle } from '../types';
+import { ResultSetHeader } from 'mysql2';
 
 export default async function postNote(
     req: ExpressRequest,
@@ -42,7 +42,7 @@ export default async function postNote(
         );
 
         if (result.affectedRows === 1) {
-            res.status(201).send({ uuid });
+            res.status(201).send({ uuid, last_updated_at: now });
         } else {
             res.status(500).send(`Internal error: ${result.info}`);
         }
@@ -81,9 +81,9 @@ function validateRequestBody(requestBody: unknown): PostNoteRequestBody {
         throw new Error('Title too long');
     }
 
-    return requestBodyObj as unknown as PostNoteRequestBody;
-}
+    if (requestBodyObj.title.length == 0) {
+        throw new Error('Title missing');
+    }
 
-interface NoteTitle extends RowDataPacket {
-    title: string;
+    return requestBodyObj as unknown as PostNoteRequestBody;
 }
