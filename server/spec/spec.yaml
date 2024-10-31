@@ -10,7 +10,7 @@ paths:
   /notes:
     get:
       tags:
-        - In scope
+        - Implemented
       description: Get all notes. Does not include note contents.
       responses:
         200:
@@ -24,7 +24,7 @@ paths:
           $ref: '#/components/responses/401-unauthenticated'
     post:
       tags:
-        - In scope
+        - Implemented
       description: Create a new note.
       requestBody:
         required: true
@@ -49,7 +49,7 @@ paths:
   /notes/{uuid}:
     get:
       tags:
-        - Out of scope
+        - Not implemented
       description: Get the full data of a specific note.
       parameters:
         - $ref: '#/components/parameters/path-uuid'
@@ -65,7 +65,7 @@ paths:
           $ref: '#/components/responses/404-bad-path-uuid'
     patch:
       tags:
-        - In scope
+        - Implemented
       description: Update a specific note. Automatically updates last_updated_at.
       parameters:
         - $ref: '#/components/parameters/path-uuid'
@@ -107,7 +107,7 @@ paths:
           $ref: '#/components/responses/404-bad-path-uuid'
     delete:
       tags:
-        - In scope
+        - Implemented
       description: Permanently delete a specific note.
       parameters:
         - $ref: '#/components/parameters/path-uuid'
@@ -121,7 +121,7 @@ paths:
   /folders:
     get:
       tags:
-        - Out of scope
+        - Not implemented
       description: Get all folders.
       responses:
         200:
@@ -137,7 +137,7 @@ paths:
           $ref: '#/components/responses/404-bad-path-uuid'
     post:
       tags:
-        - Out of scope
+        - Not implemented
       description: Create a new folder.
       requestBody:
         required: true
@@ -162,7 +162,7 @@ paths:
   /folders/{uuid}:
     get:
       tags:
-        - Out of scope
+        - Not implemented
       description: Get a specific folder.
       parameters:
         - $ref: '#/components/parameters/path-uuid'
@@ -178,7 +178,7 @@ paths:
           $ref: '#/components/responses/404-bad-path-uuid'
     patch:
       tags:
-        - Out of scope
+        - Not implemented
       description: Update a specific folder.
       parameters:
         - $ref: '#/components/parameters/path-uuid'
@@ -205,7 +205,7 @@ paths:
           $ref: '#/components/responses/404-bad-path-uuid'
     delete:
       tags:
-        - Out of scope
+        - Not implemented
       description: Delete a specific folder. Any contained notes will be moved to the trash (and have their folder set to the root).
       parameters:
         - $ref: '#/components/parameters/path-uuid'
@@ -219,7 +219,7 @@ paths:
   /updates:
     get:
       tags:
-        - Out of scope
+        - Not implemented
       description: Get all the entities that have been updated after a certain timestamp. Does not include notes' contents.
       parameters:
         - name: since
@@ -362,7 +362,7 @@ components:
       description: The uuid in the path did not match any existing resource of the applicable type.
 
 tags:
-  - name: In scope
-    description: In scope for this sprint.
-  - name: Out of scope
-    description: Out of scope for this sprint, but still required for the full portfolio project.
+  - name: Implemented
+    description: These endpoints have been implemented. :)
+  - name: Not implemented
+    description: These endpoints have not been implemented. :(
